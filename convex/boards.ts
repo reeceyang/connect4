@@ -23,3 +23,16 @@ export const get = query({
     return board;
   },
 });
+
+export const turn = query({
+  args: {
+    gameId: v.id("games"),
+  },
+  handler: async (ctx, args) => {
+    const moves = await ctx.db
+      .query("moves")
+      .filter((q) => q.eq(q.field("gameId"), args.gameId))
+      .collect();
+    return (moves.length % 2) + 1;
+  },
+});

@@ -1,10 +1,41 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { GenericQueryCtx, AnyDataModel } from "convex/server";
 
-export const get = query({
+const getUsername = (
+  ctx: GenericQueryCtx<AnyDataModel>,
+  tokenIdentifier: string
+) =>
+  ctx.db
+    .query("users")
+    .filter((q) => q.eq(q.field("tokenIdentifier"), tokenIdentifier))
+    .unique();
+
+export const getAll = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("games").collect();
+    return await Promise.all(
+      (
+        await ctx.db.query("games").collect()
+      ).map(async (game) => ({
+        ...game,
+        player_1_username: (await getUsername(ctx, game.player_1)).name,
+        player_2_username: (await getUsername(ctx, game.player_2)).name,
+      }))
+    );
+  },
+});
+
+export const get = query({
+  args: {
+    gameId: v.id("games"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.gameId).then(async (game) => ({
+      ...game,
+      player_1_username: (await getUsername(ctx, game.player_1)).name,
+      player_2_username: (await getUsername(ctx, game.player_2)).name,
+    }));
   },
 });
 

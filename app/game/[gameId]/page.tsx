@@ -1,6 +1,7 @@
 "use client";
 
-import { NUM_ROWS, P1, P2 } from "@/constants";
+import Piece from "@/components/Piece";
+import { NUM_ROWS, Player } from "@/constants";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -9,12 +10,39 @@ export default function Page({ params }: { params: { gameId: string } }) {
   const board = useQuery(api.boards.get, {
     gameId: params.gameId as Id<"games">,
   });
+  const game = useQuery(api.games.get, {
+    gameId: params.gameId as Id<"games">,
+  });
+  const turn = useQuery(api.boards.turn, {
+    gameId: params.gameId as Id<"games">,
+  });
   const make = useMutation(api.moves.make);
 
   return (
-    <div>
-      Game {params.gameId}
-      <div className="flex flex-row gap-2">
+    <div className="container m-auto">
+      <div className="stats">
+        <div className="stat">
+          <div className="stat-figure text-secondary">
+            <Piece player={1} />
+          </div>
+          <div className="stat-title">Player 1</div>
+          <div className="stat-value">{game?.player_1_username}</div>
+          <div className="stat-desc">
+            {turn === Player.P1 ? "Current" : "Next"} turn
+          </div>
+        </div>
+        <div className="stat">
+          <div className="stat-figure text-secondary">
+            <Piece player={2} />
+          </div>
+          <div className="stat-title">Player 2</div>
+          <div className="stat-value">{game?.player_2_username}</div>
+          <div className="stat-desc">
+            {turn === Player.P2 ? "Current" : "Next"} turn
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-row gap-2 m-auto">
         {board?.map((col, i) => (
           <div
             className="flex flex-col-reverse gap-2 hover:brightness-125 cursor-pointer"
@@ -24,16 +52,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
             }
           >
             {Array.from({ ...col, length: NUM_ROWS }).map((piece, j) => (
-              <div
-                className={`w-16 h-16 mask mask-circle ${
-                  piece === P1
-                    ? "bg-primary"
-                    : piece === P2
-                    ? "bg-secondary"
-                    : "bg-base-200"
-                }`}
-                key={`${i}-${j}`}
-              />
+              <Piece player={piece} key={`${i}-${j}`} />
             ))}
           </div>
         ))}
