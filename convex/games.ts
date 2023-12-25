@@ -19,8 +19,16 @@ export const getAll = query({
         await ctx.db.query("games").collect()
       ).map(async (game) => ({
         ...game,
-        player_1_username: (await getUsername(ctx, game.player_1)).name,
-        player_2_username: (await getUsername(ctx, game.player_2)).name,
+        player_1_username: game.player_1
+          ? (
+              await getUsername(ctx, game.player_1)
+            ).name
+          : undefined,
+        player_2_username: game.player_2
+          ? (
+              await getUsername(ctx, game.player_2)
+            ).name
+          : undefined,
       }))
     );
   },
@@ -33,8 +41,16 @@ export const get = query({
   handler: async (ctx, args) => {
     return await ctx.db.get(args.gameId).then(async (game) => ({
       ...game,
-      player_1_username: (await getUsername(ctx, game.player_1)).name,
-      player_2_username: (await getUsername(ctx, game.player_2)).name,
+      player_1_username: game.player_1
+        ? (
+            await getUsername(ctx, game.player_1)
+          ).name
+        : undefined,
+      player_2_username: game.player_2
+        ? (
+            await getUsername(ctx, game.player_2)
+          ).name
+        : undefined,
     }));
   },
 });
