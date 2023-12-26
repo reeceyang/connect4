@@ -45,9 +45,9 @@ export const getIdentity = query({
   args: {},
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Called storeUser without authentication present");
-    }
+    // if (!identity) {
+    //   throw new Error("Called storeUser without authentication present");
+    // }
     return identity;
   },
 });

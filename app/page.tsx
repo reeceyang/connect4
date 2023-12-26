@@ -17,42 +17,16 @@ export default function Home() {
   const games = useQuery(api.games.getAll);
   const makeGame = useMutation(api.games.make);
   const joinGame = useMutation(api.games.join);
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
   const identity = useQuery(api.users.getIdentity);
-  const dialogRef = useRef<HTMLDialogElement>(null);
   return (
-    <div>
-      <div className="navbar gap-2">
-        <Link href="/">
-          <button className="btn btn-ghost text-xl">connect4</button>
-        </Link>
+    <div className="container m-auto">
+      <div className="flex flex-row">
+        <h1 className="text-3xl font-bold mr-auto">Lobby</h1>
         <button className="btn" onClick={() => makeGame()}>
-          Make Game
+          New Game
         </button>
-        <div className="flex-1" />
-        <Unauthenticated>
-          <SignInButton mode="modal">
-            <button className="btn">Sign in</button>
-          </SignInButton>
-        </Unauthenticated>
-
-        <Authenticated>
-          <button
-            className="btn"
-            onClick={() => {
-              dialogRef.current?.showModal();
-            }}
-          >
-            <IconUserCircle />
-            Welcome, {user?.username}
-          </button>
-        </Authenticated>
       </div>
-      <Authenticated>
-        <dialog className="modal overflow-y-auto" ref={dialogRef}>
-          <UserProfile />
-        </dialog>
-      </Authenticated>
       <div className="overflow-x-auto">
         <table className="table">
           {/* head */}
@@ -77,9 +51,9 @@ export default function Home() {
                   <Link href={"/game/" + game._id}>
                     {game.player_2 === identity?.tokenIdentifier ||
                     game.player_1 === identity?.tokenIdentifier ? (
-                      <button className="btn btn-primary">Play</button>
+                      <button className="btn btn-secondary">Play</button>
                     ) : !isSignedIn ? (
-                      <button className="btn btn-primary">Spectate</button>
+                      <button className="btn btn-neutral">Spectate</button>
                     ) : (
                       <button
                         className="btn btn-primary"

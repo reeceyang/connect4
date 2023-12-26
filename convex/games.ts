@@ -16,7 +16,7 @@ export const getAll = query({
   handler: async (ctx) => {
     return await Promise.all(
       (
-        await ctx.db.query("games").collect()
+        await ctx.db.query("games").order("desc").collect()
       ).map(async (game) => ({
         ...game,
         player_1_username: game.player_1
