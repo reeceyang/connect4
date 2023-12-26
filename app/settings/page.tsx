@@ -7,7 +7,8 @@ export default function Page() {
   const { isSignedIn } = useAuth();
   const router = useRouter();
   if (!isSignedIn) {
-    router.push("/");
+    router.replace("/");
+    return null;
   }
   return (
     <div className="m-auto w-fit">
