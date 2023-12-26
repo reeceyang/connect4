@@ -1,4 +1,4 @@
-import { Player } from "@/constants";
+import { Player } from "@/convex/constants";
 
 const Piece = ({ player }: { player: Player | undefined }) => (
   <div

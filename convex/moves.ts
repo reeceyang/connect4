@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getBoard, getTurn } from "./boards";
+import { NUM_ROWS, Player } from "./constants";
 
 export const make = mutation({
   args: {
@@ -11,7 +13,25 @@ export const make = mutation({
     if (identity === null) {
       throw new Error("Unauthenticated call to mutation");
     }
-    // TODO: validate the move
+    const moves = await ctx.db
+      .query("moves")
+      .filter((q) => q.eq(q.field("gameId"), args.gameId))
+      .order("asc")
+      .collect();
+    const game = await ctx.db.get(args.gameId);
+    const isPlayer1 = game.player_1 === identity.tokenIdentifier;
+    if (
+      (isPlayer1 && getTurn(moves) !== Player.P1) ||
+      (!isPlayer1 && getTurn(moves) !== Player.P2)
+    ) {
+      // not this player's turn
+      return;
+    }
+    const board = getBoard(moves);
+    if (board[args.column].length >= NUM_ROWS) {
+      // the row is full
+      return;
+    }
     ctx.db.insert("moves", {
       gameId: args.gameId,
       column: args.column,

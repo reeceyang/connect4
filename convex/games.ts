@@ -80,7 +80,7 @@ export const join = mutation({
     }
     const game = await ctx.db.get(args.gameId);
     // can only join a non-full game
-    if (!game.player_2) {
+    if (!game.player_2 && game.player_1 !== identity.tokenIdentifier) {
       ctx.db.patch(args.gameId, { player_2: identity.tokenIdentifier });
     }
   },

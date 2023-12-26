@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 /**
  * Insert or update the user in a Convex table then return the document's ID.
@@ -38,5 +38,16 @@ export const store = mutation({
       name: args.username,
       tokenIdentifier: identity.tokenIdentifier,
     });
+  },
+});
+
+export const getIdentity = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called storeUser without authentication present");
+    }
+    return identity;
   },
 });

@@ -18,6 +18,7 @@ export default function Home() {
   const makeGame = useMutation(api.games.make);
   const joinGame = useMutation(api.games.join);
   const { user, isSignedIn } = useUser();
+  const identity = useQuery(api.users.getIdentity);
   const dialogRef = useRef<HTMLDialogElement>(null);
   return (
     <div>
@@ -30,23 +31,28 @@ export default function Home() {
         </button>
         <div className="flex-1" />
         <Unauthenticated>
-          <button className="btn">
-            <SignInButton mode="modal" />
-          </button>
+          <SignInButton mode="modal">
+            <button className="btn">Sign in</button>
+          </SignInButton>
         </Unauthenticated>
-        <button
-          className="btn"
-          onClick={() => {
-            dialogRef.current?.showModal();
-          }}
-        >
-          <IconUserCircle />
-          Welcome, {user?.username}
-        </button>
+
+        <Authenticated>
+          <button
+            className="btn"
+            onClick={() => {
+              dialogRef.current?.showModal();
+            }}
+          >
+            <IconUserCircle />
+            Welcome, {user?.username}
+          </button>
+        </Authenticated>
       </div>
-      <dialog className="modal overflow-y-auto" ref={dialogRef}>
-        <UserProfile />
-      </dialog>
+      <Authenticated>
+        <dialog className="modal overflow-y-auto" ref={dialogRef}>
+          <UserProfile />
+        </dialog>
+      </Authenticated>
       <div className="overflow-x-auto">
         <table className="table">
           {/* head */}
@@ -69,7 +75,10 @@ export default function Home() {
 
                 <td>
                   <Link href={"/game/" + game._id}>
-                    {!isSignedIn || game.player_2 ? (
+                    {game.player_2 === identity?.tokenIdentifier ||
+                    game.player_1 === identity?.tokenIdentifier ? (
+                      <button className="btn btn-primary">Play</button>
+                    ) : !isSignedIn ? (
                       <button className="btn btn-primary">Spectate</button>
                     ) : (
                       <button

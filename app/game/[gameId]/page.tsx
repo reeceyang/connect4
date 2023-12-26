@@ -1,7 +1,7 @@
 "use client";
 
 import Piece from "@/components/Piece";
-import { NUM_ROWS, Player } from "@/constants";
+import { NUM_ROWS, Player } from "@/convex/constants";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
