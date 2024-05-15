@@ -1,6 +1,6 @@
 "use client";
 
-import { UserProfile, useAuth } from "@clerk/clerk-react";
+import { UserProfile } from "@clerk/clerk-react";
 
 export default function Page() {
   return (

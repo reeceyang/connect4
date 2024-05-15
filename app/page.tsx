@@ -1,8 +1,9 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
+import { GameWinner } from "@/convex/constants";
 import { SignInButton, UserProfile, useUser } from "@clerk/clerk-react";
-import { IconUserCircle } from "@tabler/icons-react";
+import { IconCrown, IconUserCircle } from "@tabler/icons-react";
 import {
   AuthLoading,
   Authenticated,
@@ -36,7 +37,7 @@ export default function Home() {
               <th>Time Started</th>
               <th>Player 1</th>
               <th>Player 2</th>
-              <th>Join Game</th>
+              <th>Game</th>
             </tr>
           </thead>
           <tbody>
@@ -44,23 +45,51 @@ export default function Home() {
               <tr key={i}>
                 <th>{i}</th>
                 <td>{new Date(game._creationTime).toLocaleString()}</td>
-                <td>{game.player_1_username}</td>
-                <td>{game.player_2_username}</td>
+                <td>
+                  <span className="flex flex-row items-center">
+                    <IconCrown
+                      className={`mr-2 stroke-yellow-500 ${
+                        game.winner === GameWinner.P1 ||
+                        game.winner === GameWinner.TIE
+                          ? "visible"
+                          : "invisible"
+                      }`}
+                    />
+                    {game.player_1_username}
+                  </span>
+                </td>
+                <td>
+                  <span className="flex flex-row items-center">
+                    <IconCrown
+                      className={`mr-2 stroke-yellow-500 ${
+                        game.winner === GameWinner.P2 ||
+                        game.winner === GameWinner.TIE
+                          ? "visible"
+                          : "invisible"
+                      }`}
+                    />
+                    {game.player_2_username}
+                  </span>
+                </td>
 
                 <td>
                   <Link href={"/game/" + game._id}>
-                    {game.player_2 === identity?.tokenIdentifier ||
-                    game.player_1 === identity?.tokenIdentifier ? (
-                      <button className="btn btn-secondary">Play</button>
-                    ) : !isSignedIn ? (
-                      <button className="btn btn-neutral">Spectate</button>
+                    {game.winner === GameWinner.ONGOING ? (
+                      game.player_2 === identity?.tokenIdentifier ||
+                      game.player_1 === identity?.tokenIdentifier ? (
+                        <button className="btn btn-secondary">Play</button>
+                      ) : !isSignedIn ? (
+                        <button className="btn btn-neutral">Spectate</button>
+                      ) : (
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => joinGame({ gameId: game._id })}
+                        >
+                          Join
+                        </button>
+                      )
                     ) : (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => joinGame({ gameId: game._id })}
-                      >
-                        Join
-                      </button>
+                      <button className="btn">View</button>
                     )}
                   </Link>
                 </td>

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { GenericQueryCtx, AnyDataModel } from "convex/server";
+import { GameWinner } from "./constants";
 
 const getUsername = (
   ctx: GenericQueryCtx<AnyDataModel>,
@@ -65,6 +66,7 @@ export const make = mutation({
     ctx.db.insert("games", {
       player_1: identity.tokenIdentifier,
       player_2: null,
+      winner: GameWinner.ONGOING,
     });
   },
 });

@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getBoard, getTurn } from "./boards";
-import { NUM_ROWS, Player } from "./constants";
+import { getBoard, getTurn, getWinner } from "./boards";
+import { GameWinner, NUM_ROWS, Player } from "./constants";
 
 export const make = mutation({
   args: {
@@ -19,6 +19,10 @@ export const make = mutation({
       .order("asc")
       .collect();
     const game = await ctx.db.get(args.gameId);
+    if (game.winner !== GameWinner.ONGOING) {
+      // the game is over
+      return;
+    }
     const isPlayer1 = game.player_1 === identity.tokenIdentifier;
     if (
       (isPlayer1 && getTurn(moves) !== Player.P1) ||
@@ -37,5 +41,9 @@ export const make = mutation({
       column: args.column,
       player: identity.tokenIdentifier,
     });
+
+    board[args.column].push(getTurn(moves));
+    const winner = getWinner(board);
+    ctx.db.patch(game._id, { winner });
   },
 });
